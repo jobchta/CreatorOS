@@ -30,3 +30,24 @@ The width(-1) and height(-1) of chart should be greater than 0,
  GET /dashboard/calendar 200 in 1393ms (compile: 1228ms, render: 165ms)
  GET /dashboard/deals 200 in 641ms (compile: 488ms, render: 153ms)
  GET /dashboard/collabs 200 in 637ms (compile: 543ms, render: 94ms)
+✓ Compiled in 4s
+ GET / 200 in 4.1s (compile: 3.3s, render: 728ms)
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /dashboard 200 in 957ms (compile: 492ms, render: 465ms)
+ GET / 200 in 104ms (compile: 6ms, render: 98ms)
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /dashboard 200 in 128ms (compile: 7ms, render: 121ms)
