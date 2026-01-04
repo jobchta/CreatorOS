@@ -63,7 +63,7 @@ export default function Home() {
       <section className="w-full py-20 bg-slate-900 border-y border-slate-800 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-12">Free Tools to Get Started</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <Link href="/tools/rate-calculator" className="group block p-8 bg-slate-950 rounded-2xl border border-slate-800 hover:border-blue-500 transition-colors">
               <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Rate Calculator</h3>
               <p className="text-slate-400">Calculate exactly how much you should charge brands for sponsored posts.</p>
@@ -71,6 +71,10 @@ export default function Home() {
             <Link href="/tools/engagement-analyzer" className="group block p-8 bg-slate-950 rounded-2xl border border-slate-800 hover:border-purple-500 transition-colors">
               <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Engagement Analyzer</h3>
               <p className="text-slate-400">Check the health of your account and spot fake followers or viral potential.</p>
+            </Link>
+            <Link href="/tools/best-time" className="group block p-8 bg-slate-950 rounded-2xl border border-slate-800 hover:border-green-500 transition-colors">
+              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">Best Time to Post</h3>
+              <p className="text-slate-400">Find the optimal posting windows to maximize reach for your specific niche.</p>
             </Link>
           </div>
         </div>

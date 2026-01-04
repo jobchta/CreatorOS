@@ -1,0 +1,32 @@
+
+> logic-loom@0.1.0 dev
+> next dev -p 3002
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.0.2:3002
+
+✓ Starting...
+✓ Ready in 3.4s
+○ Compiling /dashboard ...
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /dashboard 200 in 9.5s (compile: 8.7s, render: 886ms)
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /dashboard 200 in 148ms (compile: 6ms, render: 142ms)
+ GET /dashboard/calendar 200 in 1393ms (compile: 1228ms, render: 165ms)
+ GET /dashboard/deals 200 in 641ms (compile: 488ms, render: 153ms)
+ GET /dashboard/collabs 200 in 637ms (compile: 543ms, render: 94ms)
