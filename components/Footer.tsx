@@ -10,6 +10,7 @@ export default function Footer() {
             <p className="text-sm mt-1">The Creator Business Operating System.</p>
           </div>
           <div className="flex space-x-6 text-sm">
+            <Link href="/pricing" className="hover:text-white">Pricing</Link>
             <Link href="#" className="hover:text-white">Privacy Policy</Link>
             <Link href="#" className="hover:text-white">Terms of Service</Link>
             <Link href="#" className="hover:text-white">Contact</Link>

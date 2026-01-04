@@ -17,7 +17,8 @@ const navItems = [
   { name: 'Collabs', href: '/dashboard/collabs', icon: Users },
   { name: 'Monetization', href: '/dashboard/monetization', icon: DollarSign },
   { name: 'Connections', href: '/dashboard/connections', icon: Link2 },
-  { name: 'Settings', href: '#', icon: Settings },
+  { name: 'Profile', href: '/dashboard/profile', icon: Users },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function Sidebar() {

@@ -17,13 +17,19 @@ export default function Navbar() {
                 <Link href="/tools/engagement-analyzer" className="hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium">
                   Engagement Analyzer
                 </Link>
+                <Link href="/pricing" className="hover:bg-slate-800 px-3 py-2 rounded-md text-sm font-medium">
+                  Pricing
+                </Link>
               </div>
             </div>
           </div>
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
-              <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium">
-                Dashboard Demo
+            <div className="ml-4 flex items-center gap-4 md:ml-6">
+              <Link href="/login" className="text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                Sign In
+              </Link>
+              <Link href="/signup" className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium">
+                Get Started
               </Link>
             </div>
           </div>
