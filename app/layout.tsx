@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "LogicLoom - Creator Business OS",
@@ -16,13 +14,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-slate-950 text-slate-200 antialiased min-h-screen flex flex-col`}
+        className={`bg-slate-950 text-slate-200 antialiased`}
       >
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        {children}
       </body>
     </html>
   );
