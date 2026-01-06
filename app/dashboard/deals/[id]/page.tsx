@@ -1,3 +1,13 @@
+export function generateStaticParams() {
+  // In a real app, you would fetch all deal IDs from your database.
+  // For static export, we need to pre-define the paths.
+  return [
+    { id: '1' },
+    { id: '2' },
+    { id: '3' },
+  ];
+}
+
 export default function DealDetailPage({ params }: { params: { id: string } }) {
   return (
     <div className="max-w-4xl mx-auto">
