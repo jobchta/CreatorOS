@@ -1,118 +1,314 @@
 'use client';
 
 import { useState } from 'react';
-import { Activity, Percent, ThumbsUp, MessageCircle } from 'lucide-react';
+import { Activity, Percent, ThumbsUp, MessageCircle, Share2, AlertTriangle, CheckCircle, TrendingUp, Users } from 'lucide-react';
+
+interface AnalysisResult {
+  engagementRate: number;
+  quality: string;
+  qualityColor: string;
+  qualityBg: string;
+  likesRatio: number;
+  commentsRatio: number;
+  sharesRatio: number;
+  insights: string[];
+  fakeFollowerRisk: 'low' | 'medium' | 'high';
+  viralPotential: number;
+}
 
 export default function EngagementAnalyzer() {
+  const [followers, setFollowers] = useState<number>(0);
   const [likes, setLikes] = useState<number>(0);
   const [comments, setComments] = useState<number>(0);
-  const [followers, setFollowers] = useState<number>(0);
-  const [result, setResult] = useState<{ rate: string; quality: string; color: string } | null>(null);
+  const [shares, setShares] = useState<number>(0);
+  const [views, setViews] = useState<number>(0);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
 
-  const calculateEngagement = (e: React.FormEvent) => {
+  const analyzeEngagement = (e: React.FormEvent) => {
     e.preventDefault();
     if (followers === 0) return;
 
-    const totalInteractions = likes + comments;
-    const rate = (totalInteractions / followers) * 100;
+    const totalInteractions = likes + comments + shares;
+    const engagementRate = (totalInteractions / followers) * 100;
 
+    // Calculate ratios
+    const likesRatio = (likes / followers) * 100;
+    const commentsRatio = (comments / followers) * 100;
+    const sharesRatio = (shares / followers) * 100;
+
+    // Determine quality
     let quality = 'Average';
-    let color = 'text-yellow-500';
+    let qualityColor = 'text-yellow-400';
+    let qualityBg = 'bg-yellow-500/10';
 
-    if (rate > 5) {
-      quality = 'Viral / Excellent';
-      color = 'text-green-500';
-    } else if (rate > 3) {
+    if (engagementRate > 6) {
+      quality = 'Viral Potential';
+      qualityColor = 'text-green-400';
+      qualityBg = 'bg-green-500/10';
+    } else if (engagementRate > 4) {
+      quality = 'Excellent';
+      qualityColor = 'text-emerald-400';
+      qualityBg = 'bg-emerald-500/10';
+    } else if (engagementRate > 2) {
       quality = 'Good';
-      color = 'text-blue-500';
-    } else if (rate < 1) {
-      quality = 'Low';
-      color = 'text-red-500';
+      qualityColor = 'text-blue-400';
+      qualityBg = 'bg-blue-500/10';
+    } else if (engagementRate < 1) {
+      quality = 'Needs Work';
+      qualityColor = 'text-red-400';
+      qualityBg = 'bg-red-500/10';
+    }
+
+    // Fake follower risk assessment
+    let fakeFollowerRisk: 'low' | 'medium' | 'high' = 'low';
+    if (engagementRate < 0.5 && followers > 10000) {
+      fakeFollowerRisk = 'high';
+    } else if (engagementRate < 1 && followers > 50000) {
+      fakeFollowerRisk = 'medium';
+    }
+
+    // Viral potential (0-100)
+    let viralPotential = Math.min(100, engagementRate * 15);
+    if (shares > comments) viralPotential += 10;
+    if (comments > likes * 0.1) viralPotential += 10;
+    viralPotential = Math.min(100, viralPotential);
+
+    // Generate insights
+    const insights: string[] = [];
+
+    if (commentsRatio > 0.5) {
+      insights.push('🎯 High comment ratio indicates strong community engagement');
+    } else if (commentsRatio < 0.1) {
+      insights.push('💬 Try asking questions in captions to boost comments');
+    }
+
+    if (sharesRatio > 0.2) {
+      insights.push('🚀 Great share rate! Your content is highly shareable');
+    }
+
+    if (fakeFollowerRisk === 'high') {
+      insights.push('⚠️ Low engagement with high followers may indicate inactive or fake followers');
+    }
+
+    if (views > 0 && views > followers * 2) {
+      insights.push('📈 Views exceed follower count - content is reaching beyond your audience');
+    }
+
+    if (engagementRate > 5) {
+      insights.push('🔥 Engagement rate is above average - great job with your content!');
+    }
+
+    if (insights.length === 0) {
+      insights.push('📊 Your engagement is within normal range for your follower count');
     }
 
     setResult({
-      rate: rate.toFixed(2),
+      engagementRate: Number(engagementRate.toFixed(2)),
       quality,
-      color
+      qualityColor,
+      qualityBg,
+      likesRatio: Number(likesRatio.toFixed(2)),
+      commentsRatio: Number(commentsRatio.toFixed(2)),
+      sharesRatio: Number(sharesRatio.toFixed(2)),
+      insights,
+      fakeFollowerRisk,
+      viralPotential: Math.round(viralPotential),
     });
   };
 
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
+
   return (
-    <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-lg max-w-lg mx-auto">
-      <div className="flex items-center space-x-3 mb-6">
-        <Activity className="text-purple-500 w-8 h-8" />
-        <h2 className="text-2xl font-bold text-white">Engagement Analyzer</h2>
+    <div className="max-w-2xl mx-auto">
+      <div className="glass-card p-8 rounded-2xl">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
+            <Activity className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Engagement Analyzer</h2>
+            <p className="text-sm text-slate-400">Analyze your content performance</p>
+          </div>
+        </div>
+
+        <form onSubmit={analyzeEngagement} className="space-y-6">
+          {/* Followers */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              <Users className="w-4 h-4 inline mr-2" />
+              Total Followers
+            </label>
+            <input
+              type="number"
+              value={followers || ''}
+              onChange={(e) => setFollowers(Number(e.target.value))}
+              placeholder="e.g. 10000"
+              className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+              required
+            />
+          </div>
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                <ThumbsUp className="w-4 h-4 inline mr-2" />
+                Avg. Likes
+              </label>
+              <input
+                type="number"
+                value={likes || ''}
+                onChange={(e) => setLikes(Number(e.target.value))}
+                placeholder="e.g. 500"
+                className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                <MessageCircle className="w-4 h-4 inline mr-2" />
+                Avg. Comments
+              </label>
+              <input
+                type="number"
+                value={comments || ''}
+                onChange={(e) => setComments(Number(e.target.value))}
+                placeholder="e.g. 50"
+                className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                <Share2 className="w-4 h-4 inline mr-2" />
+                Avg. Shares
+              </label>
+              <input
+                type="number"
+                value={shares || ''}
+                onChange={(e) => setShares(Number(e.target.value))}
+                placeholder="e.g. 20"
+                className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                <TrendingUp className="w-4 h-4 inline mr-2" />
+                Avg. Views (optional)
+              </label>
+              <input
+                type="number"
+                value={views || ''}
+                onChange={(e) => setViews(Number(e.target.value))}
+                placeholder="e.g. 5000"
+                className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2"
+          >
+            <Percent className="w-5 h-5" />
+            Analyze Engagement
+          </button>
+        </form>
+
+        {/* Results */}
+        {result && (
+          <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            {/* Main Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Engagement Rate */}
+              <div className={`p-6 rounded-2xl ${result.qualityBg} border border-slate-700`}>
+                <p className="text-sm text-slate-400 mb-1">Engagement Rate</p>
+                <div className={`text-4xl font-bold ${result.qualityColor}`}>
+                  {result.engagementRate}%
+                </div>
+                <div className={`mt-2 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${result.qualityColor} ${result.qualityBg}`}>
+                  {result.quality}
+                </div>
+              </div>
+
+              {/* Viral Potential */}
+              <div className="p-6 rounded-2xl bg-slate-800/50 border border-slate-700">
+                <p className="text-sm text-slate-400 mb-1">Viral Potential</p>
+                <div className="text-4xl font-bold text-white">{result.viralPotential}%</div>
+                <div className="mt-2 w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all"
+                    style={{ width: `${result.viralPotential}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Ratio Breakdown */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-4 bg-slate-800/30 rounded-xl text-center">
+                <ThumbsUp className="w-5 h-5 text-pink-400 mx-auto mb-2" />
+                <div className="text-lg font-bold text-white">{result.likesRatio}%</div>
+                <div className="text-xs text-slate-500">Likes Ratio</div>
+              </div>
+              <div className="p-4 bg-slate-800/30 rounded-xl text-center">
+                <MessageCircle className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+                <div className="text-lg font-bold text-white">{result.commentsRatio}%</div>
+                <div className="text-xs text-slate-500">Comments Ratio</div>
+              </div>
+              <div className="p-4 bg-slate-800/30 rounded-xl text-center">
+                <Share2 className="w-5 h-5 text-green-400 mx-auto mb-2" />
+                <div className="text-lg font-bold text-white">{result.sharesRatio}%</div>
+                <div className="text-xs text-slate-500">Shares Ratio</div>
+              </div>
+            </div>
+
+            {/* Fake Follower Risk */}
+            <div className={`p-4 rounded-xl flex items-center gap-3 ${result.fakeFollowerRisk === 'low'
+                ? 'bg-green-500/10 border border-green-500/20'
+                : result.fakeFollowerRisk === 'medium'
+                  ? 'bg-yellow-500/10 border border-yellow-500/20'
+                  : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+              {result.fakeFollowerRisk === 'low' ? (
+                <CheckCircle className="w-5 h-5 text-green-400" />
+              ) : (
+                <AlertTriangle className={`w-5 h-5 ${result.fakeFollowerRisk === 'medium' ? 'text-yellow-400' : 'text-red-400'}`} />
+              )}
+              <div>
+                <div className={`font-medium ${result.fakeFollowerRisk === 'low' ? 'text-green-400' :
+                    result.fakeFollowerRisk === 'medium' ? 'text-yellow-400' : 'text-red-400'
+                  }`}>
+                  {result.fakeFollowerRisk === 'low'
+                    ? 'Healthy Follower Base'
+                    : result.fakeFollowerRisk === 'medium'
+                      ? 'Moderate Fake Follower Risk'
+                      : 'High Fake Follower Risk'}
+                </div>
+                <p className="text-xs text-slate-400">
+                  Based on engagement rate relative to follower count
+                </p>
+              </div>
+            </div>
+
+            {/* Insights */}
+            <div className="p-4 bg-slate-800/30 rounded-xl">
+              <h4 className="font-medium text-white mb-3">Insights & Recommendations</h4>
+              <ul className="space-y-2">
+                {result.insights.map((insight, i) => (
+                  <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                    <span className="mt-0.5">{insight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
-
-      <form onSubmit={calculateEngagement} className="space-y-4">
-        <div>
-          <label className="block text-slate-400 text-sm font-medium mb-1">Total Followers</label>
-          <input
-            type="number"
-            value={followers || ''}
-            onChange={(e) => setFollowers(Number(e.target.value))}
-            placeholder="e.g. 5000"
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-slate-400 text-sm font-medium mb-1 flex items-center gap-1">
-              <ThumbsUp className="w-3 h-3" /> Likes
-            </label>
-            <input
-              type="number"
-              value={likes || ''}
-              onChange={(e) => setLikes(Number(e.target.value))}
-              placeholder="e.g. 200"
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-slate-400 text-sm font-medium mb-1 flex items-center gap-1">
-              <MessageCircle className="w-3 h-3" /> Comments
-            </label>
-            <input
-              type="number"
-              value={comments || ''}
-              onChange={(e) => setComments(Number(e.target.value))}
-              placeholder="e.g. 45"
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
-              required
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center space-x-2"
-        >
-          <Percent className="w-5 h-5" />
-          <span>Analyze Engagement</span>
-        </button>
-      </form>
-
-      {result && (
-        <div className="mt-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-bottom-4">
-          <div className="grid grid-cols-2 gap-4 text-center divide-x divide-slate-700">
-            <div>
-              <p className="text-slate-400 text-xs uppercase tracking-wider mb-1">Engagement Rate</p>
-              <div className="text-3xl font-extrabold text-white">
-                {result.rate}%
-              </div>
-            </div>
-            <div>
-              <p className="text-slate-400 text-xs uppercase tracking-wider mb-1">Quality Score</p>
-              <div className={`text-xl font-bold ${result.color} mt-1`}>
-                {result.quality}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

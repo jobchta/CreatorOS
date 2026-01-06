@@ -1,13 +1,24 @@
 import type { NextConfig } from "next";
 
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+
 const nextConfig: NextConfig = {
-  output: "export",
+  // Enable static export for GitHub Pages
+  output: 'export',
+
+  // Set base path for GitHub Pages (repo name)
+  basePath: isGitHubPages ? '/LogicLoom' : '',
+
+  // Asset prefix for correct CSS/JS loading
+  assetPrefix: isGitHubPages ? '/LogicLoom/' : '',
+
+  // Disable image optimization (not supported in static export)
   images: {
     unoptimized: true,
   },
-  // If you are deploying to a GitHub Pages project site (e.g. username.github.io/repo-name),
-  // you must set the basePath to '/repo-name'.
-  // basePath: '/your-repo-name',
+
+  // Trailing slash for GitHub Pages compatibility
+  trailingSlash: true,
 };
 
 export default nextConfig;

@@ -1,69 +1,126 @@
+'use client';
+
+import { useAnalytics, useDeals, usePosts, useUser } from '@/lib/hooks/useData';
+import { DollarSign, TrendingUp, ShoppingBag, Link2, CreditCard, Package, ExternalLink, BarChart3, Users, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { ShoppingBag, Globe, CreditCard, DollarSign } from 'lucide-react';
 
 export default function MonetizationPage() {
+  const { getTotalPipeline, deals } = useDeals();
+  const { user } = useUser();
+
+  // Calculate revenue metrics
+  const completedDeals = deals.filter(d => d.status === 'completed' && d.payment_status === 'paid');
+  const totalEarned = completedDeals.reduce((sum, d) => sum + d.deal_value, 0);
+  const pendingPayments = deals.filter(d => d.status === 'completed' && d.payment_status === 'pending');
+  const pendingAmount = pendingPayments.reduce((sum, d) => sum + d.deal_value, 0);
+  const pipelineValue = getTotalPipeline();
+
+  const revenueStreams = [
+    { name: 'Brand Deals', value: totalEarned, icon: <CreditCard className="w-5 h-5" />, color: 'text-green-400', href: '/dashboard/deals' },
+    { name: 'Digital Products', value: 0, icon: <Package className="w-5 h-5" />, color: 'text-purple-400', href: '/dashboard/monetization/store' },
+    { name: 'Link-in-Bio', value: 0, icon: <Link2 className="w-5 h-5" />, color: 'text-blue-400', href: '/dashboard/monetization/link-in-bio' },
+  ];
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Monetization</h1>
-        <p className="text-slate-400">Turn your audience into income directly.</p>
+        <h1 className="text-2xl font-bold text-white mb-2">Monetization</h1>
+        <p className="text-slate-400">Track your revenue streams and manage your creator business</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-slate-900 p-6 rounded-xl border border-slate-800">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white">Total Revenue</h3>
-            <DollarSign className="w-5 h-5 text-green-500" />
-          </div>
-          <div className="text-3xl font-bold text-white">$12,450.00</div>
-          <p className="text-sm text-slate-400 mt-1">Lifetime earnings</p>
-        </div>
-
-        <Link href="/dashboard/monetization/link-in-bio" className="group bg-slate-900 p-6 rounded-xl border border-slate-800 hover:border-blue-500 transition-all cursor-pointer">
-          <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
-            <Globe className="w-6 h-6 text-blue-500" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2">Link-in-Bio Page</h3>
-          <p className="text-slate-400 text-sm">Customize your personal landing page to drive traffic to your products.</p>
-        </Link>
-
-        <Link href="/dashboard/monetization/store" className="group bg-slate-900 p-6 rounded-xl border border-slate-800 hover:border-purple-500 transition-all cursor-pointer">
-          <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
-            <ShoppingBag className="w-6 h-6 text-purple-500" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2">Digital Store</h3>
-          <p className="text-slate-400 text-sm">Sell ebooks, presets, and templates directly to your followers.</p>
-        </Link>
-      </div>
-
-      <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
-        <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-          <h3 className="font-bold text-white">Recent Transactions</h3>
-          <button className="text-sm text-blue-500 hover:text-blue-400">View All</button>
-        </div>
-        <div className="divide-y divide-slate-800">
-          {[
-            { item: "Lightroom Preset Pack Vol. 1", customer: "jason@email.com", amount: "$29.00", date: "Today, 2:30 PM" },
-            { item: "Creator Strategy Ebook", customer: "sarah@email.com", amount: "$19.00", date: "Today, 11:15 AM" },
-            { item: "1-on-1 Consultation", customer: "mike@email.com", amount: "$150.00", date: "Yesterday" },
-          ].map((tx, i) => (
-            <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-green-900/20 flex items-center justify-center text-green-500">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-white">{tx.item}</h4>
-                  <p className="text-xs text-slate-400">{tx.customer}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-white">{tx.amount}</div>
-                <div className="text-xs text-slate-500">{tx.date}</div>
-              </div>
+      {/* Revenue Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="glass-card p-6 rounded-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-green-500/10">
+              <DollarSign className="w-5 h-5 text-green-400" />
             </div>
+            <span className="text-sm text-slate-400">Total Earned</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">${totalEarned.toLocaleString()}</div>
+          <p className="text-xs text-slate-500">From {completedDeals.length} completed deals</p>
+        </div>
+
+        <div className="glass-card p-6 rounded-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-yellow-500/10">
+              <TrendingUp className="w-5 h-5 text-yellow-400" />
+            </div>
+            <span className="text-sm text-slate-400">Pending Payments</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">${pendingAmount.toLocaleString()}</div>
+          <p className="text-xs text-slate-500">{pendingPayments.length} invoices awaiting payment</p>
+        </div>
+
+        <div className="glass-card p-6 rounded-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-blue-500/10">
+              <BarChart3 className="w-5 h-5 text-blue-400" />
+            </div>
+            <span className="text-sm text-slate-400">Pipeline Value</span>
+          </div>
+          <div className="text-3xl font-bold text-white mb-1">${pipelineValue.toLocaleString()}</div>
+          <p className="text-xs text-slate-500">Potential revenue from active deals</p>
+        </div>
+      </div>
+
+      {/* Revenue Streams */}
+      <div className="glass-card p-6 rounded-2xl">
+        <h2 className="text-lg font-semibold text-white mb-4">Revenue Streams</h2>
+        <div className="space-y-3">
+          {revenueStreams.map((stream) => (
+            <Link
+              key={stream.name}
+              href={stream.href}
+              className="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors group"
+            >
+              <div className="flex items-center gap-4">
+                <div className={stream.color}>{stream.icon}</div>
+                <div>
+                  <h3 className="font-medium text-white group-hover:text-blue-400 transition-colors">{stream.name}</h3>
+                  <p className="text-sm text-slate-500">
+                    {stream.value > 0 ? `$${stream.value.toLocaleString()} earned` : 'Set up now'}
+                  </p>
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+            </Link>
           ))}
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Link href="/dashboard/monetization/store" className="glass-card p-6 rounded-2xl hover:border-purple-500/50 transition-all group">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
+              <ShoppingBag className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white group-hover:text-purple-400 transition-colors">Digital Products</h3>
+              <p className="text-sm text-slate-400">Sell presets, templates, and ebooks</p>
+            </div>
+          </div>
+          <p className="text-slate-500 text-sm">
+            Create and sell digital products to your audience. No inventory, instant delivery.
+          </p>
+        </Link>
+
+        <Link href="/dashboard/monetization/link-in-bio" className="glass-card p-6 rounded-2xl hover:border-blue-500/50 transition-all group">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600">
+              <Link2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors">Link-in-Bio</h3>
+              <p className="text-sm text-slate-400">Custom landing page for all your links</p>
+            </div>
+          </div>
+          <p className="text-slate-500 text-sm">
+            Create a beautiful bio link page to showcase all your content and drive traffic.
+          </p>
+        </Link>
       </div>
     </div>
   );
