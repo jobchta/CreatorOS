@@ -155,7 +155,7 @@ export default function Home() {
           </div>
 
           {/* Social proof with varied colors */}
-          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 mt-16 sm:mt-24 reveal delay-500">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-8 reveal delay-500" style={{ marginTop: '80px' }}>
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2 sm:-space-x-3">
                 {[
