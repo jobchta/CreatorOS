@@ -9,7 +9,7 @@ import { FeaturesSection } from '@/components/FeaturesSection';
 import { ToolsSection } from '@/components/ToolsSection';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { CTASection } from '@/components/CTASection';
-import { Footer } from '@/components/Footer';
+import Footer from '@/components/Footer';
 import { useMouseTracking } from '@/hooks/useMouseTracking';
 import { useClientOnly } from '@/hooks/useClientOnly';
 
