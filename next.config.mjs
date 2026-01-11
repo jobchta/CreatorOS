@@ -1,15 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Enabled static export for GitHub Pages
-  output: 'export',
-
-  // ✅ Base path for GitHub Pages project repository
-  basePath: '/LogicLoom',
-  assetPrefix: '/LogicLoom/',
-
-  // ✅ Disable static image optimization (required for static export)
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -17,8 +8,6 @@ const nextConfig = {
       },
     ],
   },
-
-  // Security headers (Only applied when running via 'next start', ignored in static export)
   async headers() {
     return [
       {
@@ -48,8 +37,6 @@ const nextConfig = {
       },
     ];
   },
-
-  // Performance optimizations
   compress: true,
   poweredByHeader: false,
 };
