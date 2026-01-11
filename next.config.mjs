@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Removed static export config for Vercel
-  // ✅ Vercel handles all deployment configuration
-  // ✅ Dynamic features now fully supported
+  // ✅ Enabled static export for GitHub Pages
+  output: 'export',
 
-  // Image optimization (enabled on Vercel)
+  // ✅ Base path for GitHub Pages project repository
+  basePath: '/LogicLoom',
+  assetPrefix: '/LogicLoom/',
+
+  // ✅ Disable static image optimization (required for static export)
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,7 +18,7 @@ const nextConfig = {
     ],
   },
 
-  // Security headers
+  // Security headers (Only applied when running via 'next start', ignored in static export)
   async headers() {
     return [
       {

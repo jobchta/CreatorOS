@@ -1,48 +1,45 @@
 # LogicLoom Deployment Guide
 
-LogicLoom is standardized for deployment on **Vercel**, the creators of Next.js. This ensures the best performance, easiest setup, and full feature support (Server Components, Image Optimization, etc.).
+## GitHub Pages Deployment (Automatic)
 
-## 🚀 1. Prerequisites
+LogicLoom is configured for **automatic deployment to GitHub Pages** on every push to the `main` branch.
 
-Before deploying, ensure you have:
+### 1. Prerequisites
 
-1.  A **GitHub account** with the LogicLoom repository pushed.
-2.  A **Vercel account** (sign up at [vercel.com](https://vercel.com)).
-3.  A **Supabase project** (for the database/auth).
+1.  **GitHub Repository**: Ensure your code is pushed to GitHub.
+2.  **Repository Settings**:
+    *   Go to **Settings** -> **Pages**.
+    *   Source: **GitHub Actions**.
 
-## 🛠️ 2. Deployment Steps
+### 2. Deployment Process
 
-### Step 1: Import to Vercel
+The deployment is handled by the `.github/workflows/deploy.yml` file.
 
-1.  Log in to your [Vercel Dashboard](https://vercel.com/dashboard).
-2.  Click **"Add New..."** -> **"Project"**.
-3.  Select your `LogicLoom` repository and click **"Import"**.
+1.  **Push Changes**:
+    ```bash
+    git add .
+    git commit -m "Your message"
+    git push origin main
+    ```
+2.  **Monitor Build**:
+    *   Go to the **Actions** tab in your repository to see the deployment progress.
+3.  **View Site**:
+    *   Once complete, your site will be live at: `https://<your-username>.github.io/LogicLoom/`
 
-### Step 2: Configure Environment Variables
+### 3. Environment Variables (Supabase)
 
-In the "Configure Project" screen, expand the **"Environment Variables"** section. Add the following variables (copy them from your Supabase project settings):
+To enable authentication and database features on your live site:
 
-| Name | Value Source |
-|------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project Settings -> API -> Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Project Settings -> API -> anon public key |
+1.  Go to **Settings** -> **Secrets and variables** -> **Actions**.
+2.  Click **New repository secret**.
+3.  Add the following secrets:
+    *   `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL.
+    *   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anon Key.
 
-> **Note:** You do not need to change the Build Command or Output Directory. Vercel automatically detects Next.js.
+### ⚠️ Important Notes for GitHub Pages
 
-### Step 3: Deploy
-
-1.  Click **"Deploy"**.
-2.  Wait for the build to complete (usually < 2 minutes).
-3.  Once finished, you will see a preview image. Click it to visit your live site!
-
-## 🔄 3. Updates & CI/CD
-
-Vercel automatically connects to your GitHub repository.
-
-*   **Push to `main`**: Vercel will automatically build and deploy the new version to production.
-*   **Pull Requests**: Vercel will create a "Preview Deployment" for every PR, allowing you to test changes before merging.
-
-## ⚠️ 4. Troubleshooting
-
-*   **Build Failed?** Check the "Logs" tab in Vercel. Common issues include missing environment variables or type errors.
-*   **Database Issues?** Ensure your Supabase project is active and the URL/Key are correct in the Vercel Project Settings.
+*   **Static Export**: The application is deployed as a static site (`output: 'export'`).
+*   **Middleware**: Next.js Middleware (`middleware.ts`) **does not run** on GitHub Pages.
+    *   Server-side route protection and cookie refreshing will not work as they do on Vercel.
+    *   The application relies on client-side authentication checks.
+*   **Image Optimization**: Next.js Image Optimization is disabled. Images are served as-is.
