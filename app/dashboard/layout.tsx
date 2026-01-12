@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Sidebar from '@/components/dashboard/Sidebar';
 import Header from '@/components/dashboard/Header';
+import { AuthProvider } from '@/components/AuthProvider';
 
 export default function DashboardLayout({
   children,
@@ -12,7 +13,8 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-black relative overflow-hidden">
+    <AuthProvider>
+      <div className="flex h-screen bg-black relative overflow-hidden">
       {/* Aurora effect in dashboard */}
       <div className="aurora" />
 
@@ -30,12 +32,13 @@ export default function DashboardLayout({
       {/* Sidebar - Handles its own responsive state based on props */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex flex-1 flex-col overflow-hidden relative z-10 w-full">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
-          {children}
-        </main>
+        <div className="flex flex-1 flex-col overflow-hidden relative z-10 w-full">
+          <Header onMenuClick={() => setSidebarOpen(true)} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </AuthProvider>
   );
 }

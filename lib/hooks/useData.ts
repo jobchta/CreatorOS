@@ -14,6 +14,20 @@ import {
     CaptionTemplate,
     AppState,
 } from '../database.types';
+import { useAuth } from '@/components/AuthProvider';
+import {
+    fetchAnalytics,
+    fetchDeals,
+    fetchPosts,
+    fetchUser,
+    createPost as dbCreatePost,
+    updatePost as dbUpdatePost,
+    deletePost as dbDeletePost,
+    createDeal as dbCreateDeal,
+    updateDeal as dbUpdateDeal,
+    deleteDeal as dbDeleteDeal,
+    updateUserProfile as dbUpdateUser
+} from '../data-service';
 
 // Generic hook for store subscription
 function useStoreData<T>(selector: (state: AppState) => T): T {
@@ -32,46 +46,95 @@ function useStoreData<T>(selector: (state: AppState) => T): T {
 
 // User hook
 export function useUser() {
+    const { user: authUser } = useAuth();
     const store = getStore();
-    const user = useStoreData((state) => state.user);
+    const storeUser = useStoreData((state) => state.user);
+    const [dbUser, setDbUser] = useState<User | null>(null);
 
-    const updateUser = useCallback((updates: Partial<User>) => {
-        store.updateUser(updates);
-    }, []);
+    useEffect(() => {
+        if (authUser) {
+             fetchUser(authUser.id).then(u => {
+                 if (u) setDbUser(u);
+                 else {
+                    // Fallback or potentially create user record here
+                    setDbUser({
+                        id: authUser.id,
+                        email: authUser.email!,
+                        name: authUser.user_metadata?.name || 'Creator',
+                        tier: 'free',
+                        niche: [],
+                        created_at: new Date().toISOString()
+                    });
+                 }
+             });
+        }
+    }, [authUser]);
+
+    const user = authUser ? dbUser : storeUser;
+
+    const updateUser = useCallback(async (updates: Partial<User>) => {
+        if (authUser) {
+            try {
+                const updated = await dbUpdateUser(authUser.id, updates);
+                setDbUser(updated);
+            } catch (e) {
+                console.error("Failed to update user", e);
+            }
+        } else {
+            store.updateUser(updates);
+        }
+    }, [authUser]);
 
     return { user, updateUser };
 }
 
 // Analytics hook
 export function useAnalytics(platform?: string) {
-    const store = getStore();
-    const analytics = useStoreData((state) => state.analytics);
+    const { user: authUser } = useAuth();
+    const storeAnalytics = useStoreData((state) => state.analytics);
+    const [dbAnalytics, setDbAnalytics] = useState<AnalyticsSnapshot[]>([]);
+
+    useEffect(() => {
+        if (authUser) {
+            fetchAnalytics(authUser.id).then(setDbAnalytics).catch(console.error);
+        }
+    }, [authUser]);
+
+    const analytics = authUser ? dbAnalytics : storeAnalytics;
 
     const filtered = platform
         ? analytics.filter((a) => a.platform === platform)
         : analytics;
 
-    const latest = store.getLatestAnalytics();
+    const getLatestAnalytics = useCallback(() => {
+        const latest: Record<string, AnalyticsSnapshot> = {};
+        analytics.forEach((a) => {
+            if (!latest[a.platform] || a.snapshot_date > latest[a.platform].snapshot_date) {
+                latest[a.platform] = a;
+            }
+        });
+        return latest;
+    }, [analytics]);
 
     const getTotalFollowers = useCallback(() => {
-        const latestData = store.getLatestAnalytics();
+        const latestData = getLatestAnalytics();
         return Object.values(latestData).reduce((sum, a) => sum + (a?.followers || 0), 0);
-    }, []);
+    }, [getLatestAnalytics]);
 
     const getTotalViews = useCallback(() => {
-        const latestData = store.getLatestAnalytics();
+        const latestData = getLatestAnalytics();
         return Object.values(latestData).reduce((sum, a) => sum + (a?.avg_views || 0) * 30, 0);
-    }, []);
+    }, [getLatestAnalytics]);
 
     const getAvgEngagement = useCallback(() => {
-        const latestData = store.getLatestAnalytics();
+        const latestData = getLatestAnalytics();
         const rates = Object.values(latestData).map((a) => a?.engagement_rate || 0);
         return rates.length > 0 ? rates.reduce((a, b) => a + b, 0) / rates.length : 0;
-    }, []);
+    }, [getLatestAnalytics]);
 
     return {
         analytics: filtered,
-        latest,
+        latest: getLatestAnalytics(),
         getTotalFollowers,
         getTotalViews,
         getAvgEngagement,
@@ -80,25 +143,57 @@ export function useAnalytics(platform?: string) {
 
 // Posts hook
 export function usePosts() {
+    const { user: authUser } = useAuth();
     const store = getStore();
-    const posts = useStoreData((state) => state.posts);
+    const storePosts = useStoreData((state) => state.posts);
+    const [dbPosts, setDbPosts] = useState<ContentPost[]>([]);
 
-    const addPost = useCallback((post: Omit<ContentPost, 'id'>) => {
-        return store.addPost(post);
-    }, []);
+    const refreshPosts = useCallback(() => {
+        if (authUser) {
+            fetchPosts(authUser.id).then(setDbPosts).catch(console.error);
+        }
+    }, [authUser]);
 
-    const updatePost = useCallback((id: string, updates: Partial<ContentPost>) => {
-        store.updatePost(id, updates);
-    }, []);
+    useEffect(() => {
+        refreshPosts();
+    }, [refreshPosts]);
 
-    const deletePost = useCallback((id: string) => {
-        store.deletePost(id);
-    }, []);
+    const posts = authUser ? dbPosts : storePosts;
+
+    const addPost = useCallback(async (post: Omit<ContentPost, 'id'>) => {
+        if (authUser) {
+            // Remove user_id from the object passed to hook if it exists, as createPost handles it
+            const { user_id, ...postData } = post as any;
+            const newPost = await dbCreatePost(authUser.id, postData);
+            refreshPosts();
+            return newPost;
+        } else {
+            return store.addPost(post);
+        }
+    }, [authUser, refreshPosts]);
+
+    const updatePost = useCallback(async (id: string, updates: Partial<ContentPost>) => {
+        if (authUser) {
+            await dbUpdatePost(id, updates);
+            refreshPosts();
+        } else {
+            store.updatePost(id, updates);
+        }
+    }, [authUser, refreshPosts]);
+
+    const deletePost = useCallback(async (id: string) => {
+        if (authUser) {
+            await dbDeletePost(id);
+            refreshPosts();
+        } else {
+            store.deletePost(id);
+        }
+    }, [authUser, refreshPosts]);
 
     return { posts, addPost, updatePost, deletePost };
 }
 
-// Ideas hook
+// Ideas hook - Keeping as Demo Store for now as per plan focus on Posts/Deals
 export function useIdeas() {
     const store = getStore();
     const ideas = useStoreData((state) => state.ideas);
@@ -116,20 +211,51 @@ export function useIdeas() {
 
 // Deals hook
 export function useDeals() {
+    const { user: authUser } = useAuth();
     const store = getStore();
-    const deals = useStoreData((state) => state.deals);
+    const storeDeals = useStoreData((state) => state.deals);
+    const [dbDeals, setDbDeals] = useState<BrandDeal[]>([]);
 
-    const addDeal = useCallback((deal: Omit<BrandDeal, 'id' | 'created_at'>) => {
-        return store.addDeal(deal);
-    }, []);
+    const refreshDeals = useCallback(() => {
+        if (authUser) {
+            fetchDeals(authUser.id).then(setDbDeals).catch(console.error);
+        }
+    }, [authUser]);
 
-    const updateDeal = useCallback((id: string, updates: Partial<BrandDeal>) => {
-        store.updateDeal(id, updates);
-    }, []);
+    useEffect(() => {
+        refreshDeals();
+    }, [refreshDeals]);
 
-    const deleteDeal = useCallback((id: string) => {
-        store.deleteDeal(id);
-    }, []);
+    const deals = authUser ? dbDeals : storeDeals;
+
+    const addDeal = useCallback(async (deal: Omit<BrandDeal, 'id' | 'created_at'>) => {
+        if (authUser) {
+            const { user_id, ...dealData } = deal as any;
+            const newDeal = await dbCreateDeal(authUser.id, dealData);
+            refreshDeals();
+            return newDeal;
+        } else {
+            return store.addDeal(deal);
+        }
+    }, [authUser, refreshDeals]);
+
+    const updateDeal = useCallback(async (id: string, updates: Partial<BrandDeal>) => {
+        if (authUser) {
+            await dbUpdateDeal(id, updates);
+            refreshDeals();
+        } else {
+            store.updateDeal(id, updates);
+        }
+    }, [authUser, refreshDeals]);
+
+    const deleteDeal = useCallback(async (id: string) => {
+        if (authUser) {
+            await dbDeleteDeal(id);
+            refreshDeals();
+        } else {
+            store.deleteDeal(id);
+        }
+    }, [authUser, refreshDeals]);
 
     const getDealsByStatus = useCallback((status: BrandDeal['status']) => {
         return deals.filter((d) => d.status === status);
