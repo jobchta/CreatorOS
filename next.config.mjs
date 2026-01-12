@@ -1,14 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Enabled static export for GitHub Pages
-  output: 'export',
+  // Disabled static export to support Middleware and SSR
+  // output: 'export',
 
-  // ✅ Base path for GitHub Pages project repository
-  basePath: '/LogicLoom',
-  assetPrefix: '/LogicLoom/',
+  // Base path removed as we are deploying to Vercel/SSR, not GitHub Pages
+  // basePath: '/LogicLoom',
+  // assetPrefix: '/LogicLoom/',
 
-  // ✅ Disable static image optimization (required for static export)
   images: {
+    // Unoptimized can be false for Vercel, but keeping true for cost saving/simplicity if desired.
+    // Usually standard Next.js Image Optimization is better.
     unoptimized: true,
     remotePatterns: [
       {
@@ -18,7 +19,6 @@ const nextConfig = {
     ],
   },
 
-  // Security headers (Only applied when running via 'next start', ignored in static export)
   async headers() {
     return [
       {
@@ -49,7 +49,6 @@ const nextConfig = {
     ];
   },
 
-  // Performance optimizations
   compress: true,
   poweredByHeader: false,
 };

@@ -2,6 +2,7 @@
 
 import { Bell, Search, Plus, ChevronDown, Command, Sparkles, Wand2, Menu } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '../ui/Button';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -47,10 +48,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </button>
 
         {/* New button with rainbow gradient */}
-        <button className="btn-rainbow !py-2.5 md:!py-3 !px-3 md:!px-5 text-sm flex items-center gap-2">
+        <Button variant="rainbow" className="!py-2.5 md:!py-3 !px-3 md:!px-5 text-sm flex items-center gap-2">
           <Plus className="w-4 h-4" />
           <span className="hidden md:inline">Create</span>
-        </button>
+        </Button>
 
         {/* Notifications */}
         <button className="relative p-2.5 md:p-3 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all">

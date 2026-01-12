@@ -3,6 +3,17 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+    // Graceful fallback if env vars are missing
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        // If we are in "Demo Mode" (no backend), just pass through
+        // This prevents the app from crashing on start if not configured
+        return NextResponse.next({
+            request: {
+                headers: request.headers,
+            },
+        })
+    }
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,
@@ -10,8 +21,8 @@ export async function updateSession(request: NextRequest) {
     })
 
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
                 getAll() {
