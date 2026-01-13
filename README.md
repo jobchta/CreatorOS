@@ -28,15 +28,15 @@ LogicLoom is an all-in-one platform designed to replace the fragmented stack of 
 2.  **Protect Secrets:**
     *   **NEVER** commit `.env` or `.env.local` files to version control.
     *   The `.gitignore` file is pre-configured to exclude these files.
-    *   Store API keys and database credentials in your hosting platform's environment variables (e.g., Vercel Project Settings, Railway Variables).
+    *   Store API keys and database credentials in your hosting platform's environment variables (e.g., GitHub Secrets for Actions).
 
 ## 📦 Deployment
 
-This project is configured for Server-Side Rendering (SSR) and Middleware support.
+This project is configured for **Static Site Generation (SSG)** to support hosting on **GitHub Pages**.
 
-1.  **Hosting:** Recommended: **Vercel** or **Railway**.
-    *   *Note: GitHub Pages static export is disabled to support authentication middleware.*
-2.  **Database:** [Supabase Free Tier](https://supabase.com/pricing).
+*   **Hosting:** GitHub Pages.
+*   **Database:** [Supabase Free Tier](https://supabase.com/pricing).
+*   **Note:** Server-side middleware is disabled. Authentication protection is handled client-side.
 
 ### Getting Started
 
@@ -56,7 +56,7 @@ This project is configured for Server-Side Rendering (SSR) and Middleware suppor
     ```bash
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000).
+    Open [http://localhost:3000/LogicLoom](http://localhost:3000/LogicLoom) (matches base path).
 
 4.  **Database Setup (Supabase):**
     *   Create a new project on [Supabase](https://supabase.com/).

@@ -12,7 +12,8 @@
 
 ### Performance
 - [x] Production build completes: `npm run build`
-- [x] Server-Side Rendering (SSR) enabled
+- [x] Static Site Generation (SSG) enabled
+- [x] Image optimization disabled (unoptimized: true)
 - [x] CSS minification enabled
 - [x] JavaScript minification enabled
 - [x] Source maps disabled in production
@@ -23,29 +24,28 @@
 - [x] `.env` files in `.gitignore`
 - [x] Environment variables use `NEXT_PUBLIC_` prefix for client access
 - [x] Security headers configured in `next.config.mjs`
-- [x] Middleware configured for route protection
-- [x] Supabase Row Level Security (RLS) policies planned/active
+- [x] Client-side Auth protection implemented in `DashboardLayout`
+- [x] Supabase Row Level Security (RLS) policies mandatory
 
 ## Deployment
 
-### Platform Configuration (Vercel / Railway)
-- [x] Repository connected
-- [x] Build command: `npm run build`
-- [x] Output directory: Default (Next.js)
-- [x] Environment Variables configured in Dashboard:
-  - `NEXT_PUBLIC_SUPABASE_URL`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+### GitHub Pages Configuration
+- [x] Repository has GitHub Pages enabled
+- [x] Source set to `gh-pages` branch
+- [x] `basePath` configured in `next.config.mjs`
+- [x] `assetPrefix` configured in `next.config.mjs`
+- [x] GitHub Actions workflow created (`.github/workflows/deploy.yml`)
 
 ## Testing
 - [x] Homepage loads correctly
-- [x] Dashboard loads (Authenticated & Demo modes)
+- [x] Dashboard loads (Client-side fetch)
 - [x] Navigation works
 - [x] Responsive design tested
-- [x] Middleware redirects working
+- [x] Client-side redirects working
 
 ## Database
 - [x] Schema file created (`db/schema.sql`)
-- [x] Connection logic implemented (`lib/data-service.ts`)
+- [x] Connection logic implemented (`lib/data-service.ts` or client component)
 - [x] Graceful fallback for missing keys implemented
 
 ## Documentation
@@ -56,5 +56,5 @@
 ## Status: ✅ PRODUCTION READY
 
 **Last Checked**: January 2026
-**Deployment**: Vercel / Railway (SSR)
+**Deployment**: GitHub Pages (Static)
 **Status**: Ready to deploy
