@@ -2,6 +2,7 @@
 
 import { FC } from 'react';
 import Link from 'next/link';
+import { Button } from './ui/Button';
 
 interface HeroSectionProps {
   mousePos?: { x: number; y: number }; // Optional now
@@ -21,7 +22,7 @@ export const HeroSection: FC<HeroSectionProps> = () => {
       <div className="container relative z-10 text-center">
 
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/10 mb-8 reveal">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-glass border border-white/10 backdrop-blur-xl mb-8 reveal">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -34,7 +35,7 @@ export const HeroSection: FC<HeroSectionProps> = () => {
         {/* Main Heading */}
         <h1 className="display-hero mb-6 reveal delay-100">
           <span className="block text-white">Your creator</span>
-          <span className="text-gradient-vibrant">empire awaits.</span>
+          <span className="bg-gradient-to-br from-coral via-amber via-teal via-cyan to-rose bg-[length:400%_400%] animate-[gradient-flow_8s_ease_infinite] bg-clip-text text-transparent">empire awaits.</span>
         </h1>
 
         {/* Subtitle */}
@@ -46,17 +47,17 @@ export const HeroSection: FC<HeroSectionProps> = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 reveal delay-300">
-          <Link href="/signup" className="btn-rainbow group">
+          <Button href="/signup" variant="rainbow" className="group">
             <span>Launch your empire</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
-          <Link href="/tools" className="btn-ghost group">
+          </Button>
+          <Button href="/tools" variant="ghost" className="group">
             <span>Explore Free Tools</span>
-          </Link>
+          </Button>
         </div>
 
         {/* Social Proof / Stats */}
-        <div className="glass-card inline-flex flex-wrap items-center justify-center gap-8 p-6 md:p-8 reveal delay-400 border-white/5">
+        <div className="bg-glass border border-white/5 backdrop-blur-xl rounded-2xl inline-flex flex-wrap items-center justify-center gap-8 p-6 md:p-8 reveal delay-400 shadow-xl">
           {/* Avatar Stack */}
           <div className="flex items-center gap-4">
             <div className="flex -space-x-3">

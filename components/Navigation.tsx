@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FC } from 'react';
 import { Menu, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Button } from './ui/Button';
 
 interface NavigationProps {
   mobileMenuOpen: boolean;
@@ -17,7 +18,7 @@ export const Navigation: FC<NavigationProps> = ({
 }) => {
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 bg-white/3 border-b border-white/8 backdrop-blur-20"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/5 border-b border-white/10 backdrop-blur-xl"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -49,10 +50,10 @@ export const Navigation: FC<NavigationProps> = ({
           <Link href="/dashboard" className="text-sm font-medium text-white/60 hover:text-white transition-colors">
             Sign in
           </Link>
-          <Link href="/dashboard" className="btn-teal btn-shimmer text-sm !py-2.5 !px-5">
+          <Button href="/dashboard" variant="teal" className="text-sm !py-2.5 !px-5 btn-shimmer">
             Start free
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
-          </Link>
+          </Button>
         </div>
 
         <button
@@ -66,7 +67,7 @@ export const Navigation: FC<NavigationProps> = ({
       </div>
 
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-white/3 border-t border-white/8 py-4 px-4">
+        <div className="sm:hidden bg-white/5 border-t border-white/10 py-4 px-4 backdrop-blur-xl">
           <div className="flex flex-col gap-4">
             <Link href="#features" className="text-white/70 hover:text-white py-2" onClick={onNavigate}>
               Features
@@ -81,10 +82,10 @@ export const Navigation: FC<NavigationProps> = ({
               <Link href="/dashboard" className="text-white/70 hover:text-white py-2 text-center" onClick={onNavigate}>
                 Sign in
               </Link>
-              <Link href="/dashboard" className="btn-teal btn-shimmer text-sm !py-3 !px-5 justify-center" onClick={onNavigate}>
+              <Button href="/dashboard" variant="teal" className="text-sm !py-3 !px-5 justify-center btn-shimmer" onClick={onNavigate}>
                 Start free
                 <ArrowRight className="w-4 h-4" />
-              </Link>
+              </Button>
             </div>
           </div>
         </div>

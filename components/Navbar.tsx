@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Button } from './ui/Button';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,7 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass border-b border-white/5 py-3' : 'bg-transparent py-5'
+        scrolled ? 'bg-glass border-b border-white/5 backdrop-blur-xl py-3' : 'bg-transparent py-5'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +28,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold tracking-tight">
               <span className="text-white">Logic</span>
-              <span className="text-gradient-vibrant">Loom</span>
+              <span className="bg-gradient-to-br from-coral via-amber via-teal via-cyan to-rose bg-[length:400%_400%] animate-[gradient-flow_8s_ease_infinite] bg-clip-text text-transparent">Loom</span>
             </Link>
 
             {/* Desktop Nav */}
@@ -48,12 +49,13 @@ export default function Navbar() {
             >
               Sign In
             </Link>
-            <Link
+            <Button
               href="/signup"
-              className="btn-teal !py-2 !px-5 !text-sm !rounded-lg hover:shadow-lg hover:shadow-teal-500/20"
+              variant="teal"
+              className="!py-2 !px-5 !text-sm !rounded-lg hover:shadow-lg hover:shadow-teal-500/20"
             >
               Get Started
-            </Link>
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -70,19 +72,20 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full glass border-b border-white/10 animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 w-full bg-glass border-b border-white/10 backdrop-blur-xl animate-fade-in">
           <div className="px-4 pt-2 pb-6 space-y-2">
             <MobileNavLink href="/tools/rate-calculator">Rate Calculator</MobileNavLink>
             <MobileNavLink href="/tools/engagement-analyzer">Analyzer</MobileNavLink>
             <MobileNavLink href="/pricing">Pricing</MobileNavLink>
             <div className="h-px bg-white/10 my-4" />
             <MobileNavLink href="/login">Sign In</MobileNavLink>
-            <Link
+            <Button
               href="/signup"
-              className="block w-full text-center btn-teal mt-4"
+              variant="teal"
+              className="w-full text-center mt-4"
             >
               Get Started
-            </Link>
+            </Button>
           </div>
         </div>
       )}
