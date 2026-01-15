@@ -1,95 +1,61 @@
--- Users Table
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email TEXT UNIQUE NOT NULL,
-    tier TEXT CHECK (tier IN ('free', 'starter', 'pro', 'enterprise')) DEFAULT 'free',
-    instagram_username TEXT,
-    tiktok_username TEXT,
-    youtube_channel TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- Enable UUID extension
+create extension if not exists "uuid-ossp";
+
+-- 1. PROFILES (Replaces Linktree/About.me settings)
+create table public.profiles (
+  id uuid references auth.users on delete cascade primary key,
+  username text unique,
+  full_name text,
+  avatar_url text,
+  bio text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Analytics Snapshots
-CREATE TABLE analytics_snapshots (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    platform TEXT NOT NULL,
-    followers BIGINT,
-    engagement_rate NUMERIC(5, 2),
-    snapshot_date DATE DEFAULT CURRENT_DATE,
-    metrics JSONB -- stores likes, comments, shares, etc.
+-- 2. BIO LINKS (Replaces Linktree functionality)
+create table public.bio_links (
+  id uuid default uuid_generate_v4() primary key,
+  profile_id uuid references public.profiles on delete cascade not null,
+  title text not null,
+  url text not null,
+  icon text, -- e.g., 'youtube', 'instagram'
+  is_active boolean default true,
+  order_index int default 0,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Content Calendar
-CREATE TABLE content_calendar (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    platform TEXT NOT NULL,
-    post_type TEXT,
-    caption TEXT,
-    hashtags TEXT[],
-    scheduled_date TIMESTAMP WITH TIME ZONE,
-    status TEXT CHECK (status IN ('idea', 'planned', 'published')) DEFAULT 'idea',
-    external_link TEXT -- Link to actual content, NO video stored
+-- 3. DEALS (Replaces Grin/Aspire CRM functionality)
+create table public.deals (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  brand_name text not null,
+  status text default 'lead', -- lead, negotiating, contract, content, review, paid
+  deal_value numeric,
+  currency text default 'USD',
+  notes text,
+  due_date date,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Brand Deals
-CREATE TABLE brand_deals (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    brand_name TEXT NOT NULL,
-    deal_value NUMERIC(10, 2),
-    status TEXT CHECK (status IN ('prospect', 'active', 'completed', 'cancelled')) DEFAULT 'prospect',
-    deliverables JSONB,
-    invoice_url TEXT,
-    payment_status TEXT CHECK (payment_status IN ('pending', 'paid', 'overdue')) DEFAULT 'pending'
+-- Enable Row Level Security (Crucial for Multi-Tenant Security)
+alter table public.profiles enable row level security;
+alter table public.bio_links enable row level security;
+alter table public.deals enable row level security;
+
+-- Policies: Users can only see/edit their own data
+create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
+create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
+create policy "Users can insert own profile" on public.profiles for insert with check (auth.uid() = id);
+
+create policy "Users can view own links" on public.bio_links for select using (
+  exists (select 1 from public.profiles where profiles.id = bio_links.profile_id and profiles.id = auth.uid())
+);
+create policy "Users can manage own links" on public.bio_links for all using (
+  exists (select 1 from public.profiles where profiles.id = bio_links.profile_id and profiles.id = auth.uid())
 );
 
--- Creator Profiles (for Marketplace)
-CREATE TABLE creator_profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    bio TEXT,
-    niche TEXT[],
-    portfolio_links JSONB, -- Array of links to Instagram posts, TikToks
-    open_to_collabs BOOLEAN DEFAULT TRUE,
-    rate_card JSONB
-);
+create policy "Users can view own deals" on public.deals for select using (auth.uid() = user_id);
+create policy "Users can manage own deals" on public.deals for all using (auth.uid() = user_id);
 
--- Collab Matches
-CREATE TABLE collab_matches (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    creator_a_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    creator_b_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    compatibility_score NUMERIC(5, 2),
-    status TEXT CHECK (status IN ('pending', 'accepted', 'declined')) DEFAULT 'pending'
-);
-
--- Digital Products
-CREATE TABLE digital_products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_type TEXT CHECK (product_type IN ('ebook', 'preset', 'template', 'other')),
-    title TEXT NOT NULL,
-    price NUMERIC(10, 2),
-    file_url TEXT, -- Supabase Storage URL
-    sales_count INTEGER DEFAULT 0
-);
-
--- Link Pages (Link-in-Bio)
-CREATE TABLE link_pages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    custom_domain TEXT UNIQUE,
-    links JSONB, -- Array of {title, url}
-    theme JSONB
-);
-
--- Email Subscribers
-CREATE TABLE email_subscribers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    subscriber_email TEXT NOT NULL,
-    subscribed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    tags TEXT[]
-);
+-- Public Policy: Anyone can view a profile and links via username (for the Smart Bio page)
+create policy "Public can view profiles by username" on public.profiles for select using (true);
+create policy "Public can view active bio links" on public.bio_links for select using (is_active = true);

@@ -46,7 +46,7 @@ export const HeroSection: FC<HeroSectionProps> = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 reveal delay-300">
-          <Link href="/signup" className="btn-rainbow group">
+          <Link href="/dashboard" className="btn-rainbow group">
             <span>Launch your empire</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
