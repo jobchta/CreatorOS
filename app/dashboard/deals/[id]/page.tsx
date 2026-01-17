@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export function generateStaticParams() {
   // In a real app, you would fetch all deal IDs from your database.
   // For static export, we need to pre-define the paths.
@@ -46,12 +48,16 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
               <span className="text-slate-400">Status</span>
               <span className="text-yellow-500 font-medium bg-yellow-500/10 px-2 py-0.5 rounded">Pending Payment</span>
             </div>
-            <button className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg border border-slate-700 transition-colors">
+            <Link
+              href={`/dashboard/deals/${params.id}/invoice`}
+              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-3 rounded-lg transition-all flex items-center justify-center gap-2 font-medium"
+            >
               Generate Invoice PDF
-            </button>
+            </Link>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

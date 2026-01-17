@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Crown,
   Gift,
-  X
+  X,
+  FileImage
 } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -29,6 +30,7 @@ const navigation = [
 
 const tools = [
   { name: 'Rate Calculator', href: '/tools/rate-calculator', icon: DollarSign, color: '#10b981' },
+  { name: 'Media Kit', href: '/tools/media-kit', icon: FileImage, color: '#8b5cf6' },
   { name: 'Engagement', href: '/tools/engagement-analyzer', icon: TrendingUp, color: '#ff6b6b' },
   { name: 'Best Time', href: '/tools/best-time', icon: Zap, color: '#ffc857' },
 ];

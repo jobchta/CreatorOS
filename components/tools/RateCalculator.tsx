@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, History, ChevronDown, Info, Sparkles } from 'lucide-react';
+import { DollarSign, TrendingUp, History, ChevronDown, Info, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useRateHistory } from '@/lib/hooks/useData';
 import { Platform } from '@/lib/database.types';
 
@@ -127,8 +128,8 @@ export default function RateCalculator() {
                   type="button"
                   onClick={() => setPlatform(p)}
                   className={`py-3 px-4 rounded-xl text-sm font-medium transition-all ${platform === p
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
                     }`}
                 >
                   {p.charAt(0).toUpperCase() + p.slice(1)}
@@ -258,8 +259,27 @@ export default function RateCalculator() {
             </div>
 
             <p className="mt-6 text-xs text-slate-500 text-center">
-              *Estimates based on 2024 industry data. Actual rates vary by brand, deliverables, and exclusivity.
+              *Estimates based on 2026 industry data. Actual rates vary by brand, deliverables, and exclusivity.
             </p>
+
+            {/* Premium Report Upsell */}
+            <Link
+              href="/tools/rate-calculator/report"
+              className="mt-6 block p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-all group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
+                    <Crown className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Get Premium Rate Report</p>
+                    <p className="text-xs text-slate-400">Negotiation scripts + rate breakdowns by content type</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
         )}
       </div>
