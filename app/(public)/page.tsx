@@ -9,17 +9,14 @@ import { CTASection } from '@/components/CTASection';
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative bg-bg overflow-x-hidden">
-      {/* Main content */}
-      {/* Navbar is in layout */}
-      
+    <div className="min-h-screen relative bg-gradient-to-br from-gray-900 via-black to-gray-900 overflow-x-hidden">
+      {/* Main content sections - all responsive */}
       <HeroSection />
       <StatsSection />
       <FeaturesSection />
       <ToolsSection />
       <TestimonialsSection />
       <CTASection />
-      {/* Footer is in layout */}
     </div>
   );
 }

@@ -9,24 +9,37 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-20" aria-label="Features">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section className="py-16 md:py-20 bg-gradient-to-b from-black/50 to-transparent" aria-label="Features">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-block mb-4 px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium">Features</div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">Everything you need</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">From analytics to brand deals, we've got your entire creator business covered.</p>
+        <div className="text-center mb-10 md:mb-16">
+          <div className="inline-block mb-3 md:mb-4 px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs md:text-sm font-medium">
+            Features
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 text-white">
+            Everything you need
+          </h2>
+          <p className="text-sm md:text-base text-gray-400 max-w-xs md:max-w-2xl mx-auto px-4">
+            From analytics to brand deals, we've got your entire creator business covered.
+          </p>
         </div>
 
-        {/* Feature Cards Grid */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+        {/* Feature Cards Grid - Stack on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {features.map((feature) => (
-            <div key={feature.title} className="feature-card p-8 rounded-2xl border border-gray-700 bg-gray-900/50 hover:border-gray-600 hover:bg-gray-900/80 transition-all group">
-              <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg bg-gradient-to-br ${feature.color} mb-6`}>
-                <span className="text-2xl">{feature.icon}</span>
+            <div
+              key={feature.title}
+              className="p-5 md:p-6 lg:p-8 rounded-xl md:rounded-2xl border border-gray-700/50 bg-gray-900/50 hover:border-gray-600 hover:bg-gray-900/80 transition-all group"
+            >
+              <div className={`inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-lg bg-gradient-to-br ${feature.color} mb-4 md:mb-6`}>
+                <span className="text-lg md:text-xl lg:text-2xl">{feature.icon}</span>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors">{feature.title}</h3>
-              <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+              <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 group-hover:text-emerald-400 transition-colors">
+                {feature.title}
+              </h3>
+              <p className="text-sm md:text-base text-gray-400 leading-relaxed">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
