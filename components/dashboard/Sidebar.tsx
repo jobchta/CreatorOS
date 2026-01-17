@@ -16,7 +16,9 @@ import {
   Crown,
   Gift,
   X,
-  FileImage
+  FileImage,
+  AtSign,
+  Wand2
 } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -31,8 +33,9 @@ const navigation = [
 const tools = [
   { name: 'Rate Calculator', href: '/tools/rate-calculator', icon: DollarSign, color: '#10b981' },
   { name: 'Media Kit', href: '/tools/media-kit', icon: FileImage, color: '#8b5cf6' },
+  { name: 'AI Captions', href: '/tools/caption-generator', icon: Wand2, color: '#ec4899' },
+  { name: 'Email Signature', href: '/tools/email-signature', icon: AtSign, color: '#22d3ee' },
   { name: 'Engagement', href: '/tools/engagement-analyzer', icon: TrendingUp, color: '#ff6b6b' },
-  { name: 'Best Time', href: '/tools/best-time', icon: Zap, color: '#ffc857' },
 ];
 
 interface SidebarProps {
