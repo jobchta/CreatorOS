@@ -17,9 +17,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass border-b border-white/5 py-3' : 'bg-transparent py-5'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass border-b border-white/5 py-3' : 'bg-transparent py-5'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -33,8 +32,8 @@ export default function Navbar() {
             {/* Desktop Nav */}
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-1">
+                <NavLink href="/simulator">Simulator</NavLink>
                 <NavLink href="/tools/rate-calculator">Rate Calculator</NavLink>
-                <NavLink href="/tools/engagement-analyzer">Analyzer</NavLink>
                 <NavLink href="/pricing">Pricing</NavLink>
               </div>
             </div>
