@@ -6,6 +6,7 @@ const nextConfig = {
   // ✅ Base path for GitHub Pages project repository
   basePath: '/LogicLoom',
   assetPrefix: '/LogicLoom/',
+  trailingSlash: true,
 
   // ✅ Disable static image optimization (required for static export)
   images: {

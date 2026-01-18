@@ -1,30 +1,18 @@
-import Stripe from 'stripe';
+// Client-side Stripe configuration
+// We use Stripe Payment Links for the static site implementation
 
-/**
- * Initialize Stripe client
- * Uses the secret key from environment variables
- */
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2023-10-16',
-    typescript: true,
-});
-
-/**
- * Price IDs for each subscription tier
- * These should match the price IDs created in your Stripe dashboard
- */
-export const PRICE_IDS = {
+export const PAYMENT_LINKS = {
     creator: {
-        monthly: process.env.STRIPE_PRICE_CREATOR_MONTHLY!,
-        annual: process.env.STRIPE_PRICE_CREATOR_ANNUAL!,
+        monthly: "https://buy.stripe.com/test_creator_monthly", // Replace with your actual Stripe Payment Link
+        annual: "https://buy.stripe.com/test_creator_annual",   // Replace with your actual Stripe Payment Link
     },
     pro: {
-        monthly: process.env.STRIPE_PRICE_PRO_MONTHLY!,
-        annual: process.env.STRIPE_PRICE_PRO_ANNUAL!,
+        monthly: "https://buy.stripe.com/test_pro_monthly",
+        annual: "https://buy.stripe.com/test_pro_annual",
     },
     agency: {
-        monthly: process.env.STRIPE_PRICE_AGENCY_MONTHLY!,
-        annual: process.env.STRIPE_PRICE_AGENCY_ANNUAL!,
+        monthly: "https://buy.stripe.com/test_agency_monthly",
+        annual: "https://buy.stripe.com/test_agency_annual",
     },
 } as const;
 
@@ -33,6 +21,7 @@ export const PRICE_IDS = {
  */
 export const PLANS = {
     creator: {
+        id: 'creator',
         name: 'Creator',
         description: 'For creators ready to monetize',
         priceMonthly: 19,
@@ -46,10 +35,12 @@ export const PLANS = {
         ],
     },
     pro: {
+        id: 'pro',
         name: 'Pro',
         description: 'The complete creator business OS',
         priceMonthly: 49,
         priceAnnual: 39,
+        popular: true,
         features: [
             'Everything in Creator',
             'Unlimited deals',
@@ -59,6 +50,7 @@ export const PLANS = {
         ],
     },
     agency: {
+        id: 'agency',
         name: 'Agency',
         description: 'For teams managing multiple creators',
         priceMonthly: 199,
@@ -77,10 +69,10 @@ export type PlanId = keyof typeof PLANS;
 export type BillingInterval = 'monthly' | 'annual';
 
 /**
- * Get the Stripe price ID for a plan and billing interval
+ * Get the Stripe Payment Link for a plan and billing interval
  */
-export function getPriceId(plan: PlanId, interval: BillingInterval): string {
-    return PRICE_IDS[plan][interval];
+export function getPaymentLink(plan: PlanId, interval: BillingInterval): string {
+    return PAYMENT_LINKS[plan][interval];
 }
 
 /**

@@ -226,7 +226,6 @@ export interface ContentIdea {
   created_at: string;
 }
 
-// Rate Calculation History
 export interface RateCalculation {
   id: string;
   user_id: string;
@@ -237,6 +236,23 @@ export interface RateCalculation {
   estimated_min: number;
   estimated_max: number;
   calculated_at: string;
+}
+
+// Public Rate Card (for viral sharing)
+export interface PublicRate {
+  id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  platform: Platform;
+  followers: number;
+  niche: string;
+  engagement_rate: number;
+  estimated_min: number;
+  estimated_max: number;
+  bio?: string;
+  created_at: string;
+  views_count: number;
 }
 
 // Hashtag Collection

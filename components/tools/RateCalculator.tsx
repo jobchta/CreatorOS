@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, History, ChevronDown, Info, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { DollarSign, TrendingUp, History, ChevronDown, Info, Sparkles, Crown, ArrowRight, Copy, Link2, Check, Share2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useRateHistory } from '@/lib/hooks/useData';
 import { Platform } from '@/lib/database.types';
@@ -43,6 +43,12 @@ export default function RateCalculator() {
   const [result, setResult] = useState<RateResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
 
+  // New state for viral features
+  const [username, setUsername] = useState('');
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [shareLink, setShareLink] = useState<string | null>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const { history, addCalculation } = useRateHistory();
 
   const calculateRate = (e: React.FormEvent) => {
@@ -94,43 +100,113 @@ export default function RateCalculator() {
     return num.toString();
   };
 
+  // Client-side pitch email generation (no server action needed)
+  const handleCopyPitchEmail = async () => {
+    if (!result) return;
+
+    const formatFollowers = (num: number) => {
+      if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+      if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+      return num.toString();
+    };
+
+    const nicheDisplay = niche.charAt(0).toUpperCase() + niche.slice(1);
+    const platformDisplay = platform.charAt(0).toUpperCase() + platform.slice(1);
+
+    const email = `Subject: Partnership Opportunity - ${username || 'Content Creator'}
+
+Hi [Brand Name],
+
+I'm ${username || 'a content creator'} with ${formatFollowers(followers)} engaged followers on ${platformDisplay}, specializing in ${nicheDisplay} content.
+
+My audience consistently engages at ${engagementRate}% (well above industry average), which means real attention for brand partners.
+
+Based on my reach and engagement metrics, my rates for sponsored content are:
+
+📊 Rate Range: $${result.min.toLocaleString()} - $${result.max.toLocaleString()} per post
+
+${shareLink ? `📎 View my full rate card: ${shareLink}\n` : ''}
+I'd love to discuss how we can create authentic, high-performing content for [Brand Name]. Are you open to a quick call this week?
+
+Best,
+${username || '[Your Name]'}
+
+---
+Rate calculated with LogicLoom`;
+
+    await navigator.clipboard.writeText(email);
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2000);
+  };
+
+  const handleGenerateShareLink = async () => {
+    if (!result) return;
+    setIsGeneratingLink(true);
+
+    // Build query params for static rate card page (GitHub Pages compatible)
+    const params = new URLSearchParams({
+      username: username || 'creator',
+      name: username || 'Creator',
+      platform,
+      followers: followers.toString(),
+      niche,
+      engagement: engagementRate.toString(),
+      min: result.min.toString(),
+      max: result.max.toString(),
+    });
+
+    const link = `${window.location.origin}/LogicLoom/rate-card/?${params.toString()}`;
+    setShareLink(link);
+    await navigator.clipboard.writeText(link);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+
+    setIsGeneratingLink(false);
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       {/* Main Calculator Card */}
-      <div className="glass-card p-8 rounded-2xl">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600">
-              <DollarSign className="w-6 h-6 text-white" />
+      <div className="glass-card p-8 rounded-3xl relative overflow-hidden">
+        {/* Decorative corner glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[100px] pointer-events-none" />
+
+        <div className="flex items-center justify-between mb-8 relative z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <DollarSign className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">Brand Rate Calculator</h2>
-              <p className="text-sm text-slate-400">Calculate your sponsored post value</p>
+              <h2 className="text-2xl font-bold text-white tracking-tight">Brand Rate Calculator</h2>
+              <p className="text-sm text-slate-400">Calculate your true market value</p>
             </div>
           </div>
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-xl transition-all"
           >
             <History className="w-4 h-4" />
             History
           </button>
         </div>
 
-        <form onSubmit={calculateRate} className="space-y-6">
+        <form onSubmit={calculateRate} className="space-y-8 relative z-10">
           {/* Platform Selection */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-3">Platform</label>
-            <div className="grid grid-cols-4 gap-2">
+          <div className="space-y-3">
+            <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider ml-1">Select Platform</label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {(['instagram', 'tiktok', 'youtube', 'twitter'] as Platform[]).map((p) => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setPlatform(p)}
-                  className={`py-3 px-4 rounded-xl text-sm font-medium transition-all ${platform === p
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-                    }`}
+                  className={`
+                    py-4 px-2 rounded-2xl text-sm font-bold transition-all duration-300 border
+                    ${platform === p
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/25 scale-[1.02]'
+                      : 'bg-slate-800/40 border-slate-700/50 text-slate-400 hover:bg-slate-700/60 hover:text-white hover:border-slate-600'
+                    }
+                  `}
                 >
                   {p.charAt(0).toUpperCase() + p.slice(1)}
                 </button>
@@ -138,165 +214,194 @@ export default function RateCalculator() {
             </div>
           </div>
 
-          {/* Followers Input */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Follower Count
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                value={followers || ''}
-                onChange={(e) => setFollowers(Number(e.target.value))}
-                placeholder="e.g. 50000"
-                className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                required
-              />
-              {followers > 0 && (
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                  {formatNumber(followers)} followers
-                </span>
-              )}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Followers Input */}
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider ml-1">Follower Count</label>
+              <div className="relative group">
+                <input
+                  type="number"
+                  value={followers || ''}
+                  onChange={(e) => setFollowers(Number(e.target.value))}
+                  placeholder="e.g. 50,000"
+                  className="w-full bg-slate-800/50 border border-slate-700/50 text-white rounded-2xl p-5 pl-5 text-xl font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder:text-slate-600"
+                  required
+                />
+                {followers > 0 && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold">
+                    {formatNumber(followers)}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Niche Selection */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Niche</label>
-            <div className="relative">
-              <select
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                className="w-full appearance-none bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none cursor-pointer"
-              >
-                <option value="lifestyle">Lifestyle / Vlog</option>
-                <option value="beauty">Beauty / Fashion</option>
-                <option value="tech">Tech / Software</option>
-                <option value="finance">Finance / Investing</option>
-                <option value="business">Business / Entrepreneurship</option>
-                <option value="fitness">Health / Fitness</option>
-                <option value="gaming">Gaming / Esports</option>
-                <option value="entertainment">Entertainment / Comedy</option>
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+            {/* Niche Selection */}
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider ml-1">Content Niche</label>
+              <div className="relative">
+                <select
+                  value={niche}
+                  onChange={(e) => setNiche(e.target.value)}
+                  className="w-full appearance-none bg-slate-800/50 border border-slate-700/50 text-white rounded-2xl p-5 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer"
+                >
+                  <option value="lifestyle">Lifestyle / Vlog</option>
+                  <option value="beauty">Beauty / Fashion</option>
+                  <option value="tech">Tech / Software</option>
+                  <option value="finance">Finance / Investing</option>
+                  <option value="business">Business / Entrepreneurship</option>
+                  <option value="fitness">Health / Fitness</option>
+                  <option value="gaming">Gaming / Esports</option>
+                  <option value="entertainment">Entertainment / Comedy</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <ChevronDown className="w-5 h-5" />
+                </div>
+              </div>
             </div>
-            <p className="mt-2 text-xs text-slate-500 flex items-center gap-1">
-              <Info className="w-3 h-3" />
-              Niche multiplier: {nicheMultipliers[niche]}x (Finance pays highest)
-            </p>
           </div>
 
           {/* Engagement Rate */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Engagement Rate (%)
-            </label>
+          <div className="space-y-3">
+            <div className="flex justify-between items-end">
+              <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider ml-1">Engagement Rate</label>
+              <span className={`text-sm font-bold px-3 py-1 rounded-full ${engagementRate > 5 ? 'bg-green-500/20 text-green-400' : engagementRate > 2 ? 'bg-blue-500/20 text-blue-400' : 'bg-red-500/20 text-red-400'
+                }`}>
+                {engagementRate}% — {engagementRate > 5 ? 'Excellent' : engagementRate > 2 ? 'Good' : 'Low'}
+              </span>
+            </div>
+
             <input
-              type="number"
-              step="0.1"
+              type="range"
               min="0"
-              max="100"
+              max="10"
+              step="0.1"
               value={engagementRate}
               onChange={(e) => setEngagementRate(Number(e.target.value))}
-              className="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
-            <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${engagementRate > 5 ? 'bg-green-500' : engagementRate > 2 ? 'bg-blue-500' : 'bg-red-500'
-                    }`}
-                  style={{ width: `${Math.min(engagementRate * 10, 100)}%` }}
-                />
-              </div>
-              <span className={`text-xs font-medium ${engagementRate > 5 ? 'text-green-400' : engagementRate > 2 ? 'text-blue-400' : 'text-red-400'
-                }`}>
-                {engagementRate > 5 ? 'Excellent' : engagementRate > 2 ? 'Good' : 'Low'}
-              </span>
+            <div className="flex justify-between text-xs text-slate-500 font-medium px-1">
+              <span>0%</span>
+              <span>5% (High)</span>
+              <span>10% (Viral)</span>
             </div>
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 flex items-center justify-center gap-2"
+            className="w-full btn-rainbow relative group"
           >
-            <TrendingUp className="w-5 h-5" />
-            Calculate My Rate
+            <span className="relative z-10 flex items-center justify-center gap-2 font-bold text-lg">
+              <TrendingUp className="w-5 h-5" />
+              Calculate Market Value
+            </span>
+            <div className="absolute inset-0 bg-white/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </form>
 
         {/* Result */}
         {result && (
-          <div className="mt-8 p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-yellow-400" />
-              <span className="text-sm font-medium text-slate-400">Estimated Rate per Post</span>
-            </div>
+          <div className="mt-10 p-1 rounded-3xl bg-gradient-to-br from-green-400 via-blue-500 to-purple-500 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="bg-[#0f111a] rounded-[22px] p-6 md:p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-full h-full bg-[url('/noise.png')] opacity-5 pointer-events-none" />
 
-            <div className="text-center mb-6">
-              <div className="text-5xl font-extrabold gradient-text mb-2">
-                ${result.min.toLocaleString()} - ${result.max.toLocaleString()}
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
+                <span className="text-sm font-bold text-slate-300 uppercase tracking-widest">Estimated Value Per Post</span>
+                <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
               </div>
-              <p className="text-slate-400 text-sm">
-                Based on {formatNumber(followers)} {platform} followers in {niche}
-              </p>
-            </div>
 
-            {/* Rate Breakdown */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-700">
-              <div className="text-center">
-                <div className="text-lg font-bold text-white">${result.breakdown.base}</div>
-                <div className="text-xs text-slate-500">Base Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-purple-400">{result.breakdown.nicheMultiplier}x</div>
-                <div className="text-xs text-slate-500">Niche Bonus</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-green-400">{result.breakdown.engagementBonus}x</div>
-                <div className="text-xs text-slate-500">Engagement</div>
-              </div>
-            </div>
-
-            <p className="mt-6 text-xs text-slate-500 text-center">
-              *Estimates based on 2026 industry data. Actual rates vary by brand, deliverables, and exclusivity.
-            </p>
-
-            {/* Premium Report Upsell */}
-            <Link
-              href="/tools/rate-calculator/report"
-              className="mt-6 block p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-all group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
-                    <Crown className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">Get Premium Rate Report</p>
-                    <p className="text-xs text-slate-400">Negotiation scripts + rate breakdowns by content type</p>
-                  </div>
+              <div className="text-center mb-8 relative z-10">
+                <div className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 mb-3 tracking-tight">
+                  ${result.min.toLocaleString()} - ${result.max.toLocaleString()}
                 </div>
-                <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                <p className="text-slate-400 text-sm font-medium">
+                  Based on <span className="text-white">{formatNumber(followers)}</span> {platform} followers in <span className="text-white capitalize">{niche}</span>
+                </p>
               </div>
-            </Link>
+
+              {/* Viral Action Buttons */}
+              <div className="space-y-6 pt-6 border-t border-slate-800">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Personalize Your Pitch
+                  </label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Your Name / Handle (e.g. @alex.creates)"
+                    className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Copy Pitch Email */}
+                  <button
+                    onClick={handleCopyPitchEmail}
+                    className="flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 active:scale-95"
+                  >
+                    {emailCopied ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied to Clipboard!
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4" />
+                        Copy Pitch Email Template
+                      </>
+                    )}
+                  </button>
+
+                  {/* Generate Share Link */}
+                  <button
+                    onClick={handleGenerateShareLink}
+                    disabled={isGeneratingLink}
+                    className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl transition-all border border-slate-700 hover:border-slate-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingLink ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Creating Link...
+                      </>
+                    ) : linkCopied ? (
+                      <>
+                        <Check className="w-4 h-4 text-green-400" />
+                        Link Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4" />
+                        Share Public Rate Card
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
       {/* History Panel */}
       {showHistory && history.length > 0 && (
-        <div className="mt-6 glass-card p-6 rounded-2xl">
-          <h3 className="text-lg font-semibold text-white mb-4">Calculation History</h3>
-          <div className="space-y-3 max-h-64 overflow-y-auto">
+        <div className="mt-8 glass-card p-6 rounded-3xl animate-in slide-in-from-bottom-4">
+          <h3 className="text-lg font-bold text-white mb-4 px-2">Recent Calculations</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
             {history.slice().reverse().slice(0, 10).map((calc, i) => (
-              <div key={calc.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                <div>
-                  <span className="text-sm font-medium text-white capitalize">{calc.platform}</span>
-                  <span className="mx-2 text-slate-600">•</span>
-                  <span className="text-sm text-slate-400">{formatNumber(calc.followers)} followers</span>
+              <div key={calc.id} className="flex items-center justify-between p-4 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/50 rounded-2xl transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <div>
+                    <div className="text-sm font-bold text-white capitalize flex items-center gap-2">
+                      {calc.platform}
+                      <span className="text-xs font-normal text-slate-500">({formatNumber(calc.followers)})</span>
+                    </div>
+                    <div className="text-xs text-slate-400 capitalize">{calc.niche}</div>
+                  </div>
                 </div>
-                <div className="text-sm font-semibold text-green-400">
+                <div className="text-sm font-bold text-green-400 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">
                   ${calc.estimated_min} - ${calc.estimated_max}
                 </div>
               </div>
@@ -307,3 +412,4 @@ export default function RateCalculator() {
     </div>
   );
 }
+

@@ -2,103 +2,131 @@
 
 import { FC } from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight, Play } from 'lucide-react';
+import { Sparkles, ArrowRight, Play, Quote } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+'use client';
+
+import { FC } from 'react';
+import Link from 'next/link';
+import { Sparkles, ArrowRight, Play, Quote } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const HeroSection: FC = () => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-slate-950/50">
 
-      {/* Background Effects - Desktop orbs larger */}
+      {/* Enhanced Animated Background Effects using Globals */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-5 md:top-20 md:left-10 w-32 h-32 md:w-64 md:h-64 rounded-full bg-purple-500/20 blur-3xl" />
-        <div className="absolute top-20 right-5 md:top-40 md:right-20 w-40 h-40 md:w-80 md:h-80 rounded-full bg-pink-500/20 blur-3xl" />
-        <div className="absolute bottom-20 left-1/4 w-48 h-48 md:w-96 md:h-96 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="orb orb-coral top-[10%] left-[10%] delay-100" />
+        <div className="orb orb-teal top-[20%] right-[15%] delay-300" />
+        <div className="orb orb-amber bottom-[15%] left-[20%] delay-500" />
+
+        {/* Additional Spotlight for depth */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[100px]" />
       </div>
 
-      {/* Main Content Container - Properly constrained */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      {/* Main Content Container */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-24 text-center">
 
-        <div className="flex flex-col items-center text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/5 mb-8 reveal hover:border-white/10 transition-colors cursor-default">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+          </span>
+          <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
+            AI-Powered Creator OS
+          </span>
+        </div>
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-6 md:mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="text-xs md:text-sm font-medium text-gray-300 tracking-wide">
-              AI-POWERED CREATOR OS
-            </span>
+        {/* Main Heading */}
+        <h1 className="display-hero mb-6 reveal-scale delay-200">
+          <span className="block text-white">Your creator</span>
+          <span className="text-gradient-vibrant">
+            empire awaits.
+          </span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed reveal delay-300">
+          The operating system that turns content creators into
+          <span className="text-white font-medium"> thriving businesses</span>.
+          Analytics. Deals. Calendar. All in one.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 reveal delay-400">
+          <Link href="/signup" className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto btn-rainbow group border-0">
+              <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
+              <span className="relative z-10">Launch your empire</span>
+              <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </Link>
+
+          <Link href="/tools" className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto btn-ghost hover:text-white group">
+              <Play className="w-4 h-4 fill-current" />
+              Explore Free Tools
+            </button>
+          </Link>
+        </div>
+
+        {/* Social Proof & Note Grid */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto reveal delay-500">
+
+          {/* Founder's Note - Authentic Social Proof */}
+          <div className="glass-card p-6 text-left relative overflow-hidden group hover:border-purple-500/30 transition-colors">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Quote className="w-12 h-12 text-purple-500" />
+            </div>
+
+            <p className="text-lg text-slate-200 leading-relaxed mb-4 italic font-medium">
+              "I built LogicLoom because I was tired of using spreadsheets to track brand deals.
+              This is the tool I wish I had when I started monetizing."
+            </p>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-purple-500/20">
+                RK
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Rahul Kotian</p>
+                <p className="text-xs text-purple-400 font-medium">Founder, LogicLoom</p>
+              </div>
+            </div>
           </div>
 
-          {/* Main Heading - Mobile-first text scaling */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
-            <span className="block text-white">Your creator</span>
-            <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-              empire awaits.
-            </span>
-          </h1>
-
-          {/* Subtitle - Responsive text and spacing */}
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 md:mb-10 max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed px-2">
-            The operating system that turns content creators into
-            <span className="text-white font-semibold"> thriving businesses</span>.
-            Analytics. Deals. Calendar. All in one.
-          </p>
-
-          {/* CTA Buttons - Stack on mobile, row on desktop */}
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto justify-center items-center mb-12 md:mb-16">
-            <Link
-              href="/signup"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 h-12 md:h-14 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white font-semibold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-purple-500/25"
-            >
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
-              <span className="text-sm md:text-base">Launch your empire</span>
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-            </Link>
-            <Link
-              href="/tools"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 h-12 md:h-14 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-all"
-            >
-              <Play className="w-4 h-4" />
-              <span className="text-sm md:text-base">Explore Free Tools</span>
-            </Link>
-          </div>
-
-          {/* Social Proof Card - Responsive layout */}
-          <div className="w-full max-w-lg md:max-w-xl bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8">
-
-              {/* Avatar Stack + Count */}
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="flex -space-x-2 md:-space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-gray-900 flex items-center justify-center text-xs font-bold text-white"
-                      style={{ background: `linear-gradient(135deg, hsl(${i * 60}, 70%, 60%), hsl(${i * 60 + 30}, 70%, 40%))` }}
-                    >
-                      {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-left">
-                  <div className="text-white font-bold text-base md:text-lg leading-none">12,000+</div>
-                  <div className="text-gray-500 text-xs uppercase tracking-wider font-medium mt-0.5">Creators</div>
-                </div>
+          {/* Stats Card */}
+          <div className="glass-card p-6 flex flex-col justify-center items-center md:items-start space-y-4 hover:border-emerald-500/30 transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="w-10 h-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-xs font-bold text-white ring-2 ring-transparent group-hover:ring-emerald-500/20 transition-all"
+                    style={{ background: `linear-gradient(135deg, hsl(${i * 60}, 70%, 60%), hsl(${i * 60 + 30}, 70%, 40%))` }}
+                  >
+                    {String.fromCharCode(64 + i)}
+                  </div>
+                ))}
               </div>
-
-              {/* Divider - Hidden on mobile */}
-              <div className="hidden sm:block w-px h-10 bg-white/10" />
-
-              {/* Rating */}
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="flex text-amber-400 text-sm md:text-lg">★★★★★</div>
-                <div className="text-left">
-                  <div className="text-white font-bold text-base md:text-lg leading-none">4.9/5</div>
-                  <div className="text-gray-500 text-xs uppercase tracking-wider font-medium mt-0.5">Rating</div>
-                </div>
+              <div className="text-left">
+                <div className="text-2xl font-bold text-white leading-none">12,000+</div>
+                <div className="text-emerald-400 text-xs uppercase tracking-wider font-bold mt-1">Active Creators</div>
               </div>
+            </div>
+
+            <div className="w-full h-px bg-white/10" />
+
+            <div className="flex items-center gap-3">
+              <div className="text-amber-400 flex gap-0.5 text-lg">
+                {'★★★★★'.split('').map((star, i) => (
+                  <span key={i} className="animate-pulse" style={{ animationDelay: `${i * 100}ms` }}>{star}</span>
+                ))}
+              </div>
+              <span className="text-slate-400 text-sm font-medium">4.9/5 Average Rating</span>
             </div>
           </div>
         </div>
@@ -106,3 +134,4 @@ export const HeroSection: FC = () => {
     </section>
   );
 };
+

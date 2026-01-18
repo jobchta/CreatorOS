@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
   avatar_url TEXT,
+  subscription_status TEXT DEFAULT 'free',
+  subscription_plan TEXT DEFAULT 'free',
+  subscription_interval TEXT,
+  stripe_subscription_id TEXT,
+  stripe_customer_id TEXT,
+  subscription_period_end TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
@@ -129,3 +135,44 @@ CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- PUBLIC_RATES TABLE
+-- Purpose: Store shareable public rate cards for viral growth
+-- ============================================
+CREATE TABLE IF NOT EXISTS public_rates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  username TEXT NOT NULL,
+  display_name TEXT,
+  avatar_url TEXT,
+  platform TEXT NOT NULL CHECK (platform IN ('instagram', 'tiktok', 'youtube', 'twitter')),
+  followers INTEGER NOT NULL,
+  niche TEXT NOT NULL,
+  engagement_rate NUMERIC(5,2) NOT NULL,
+  estimated_min INTEGER NOT NULL,
+  estimated_max INTEGER NOT NULL,
+  bio TEXT,
+  views_count INTEGER DEFAULT 0,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- Index for slug lookups (used in URL)
+CREATE INDEX IF NOT EXISTS idx_public_rates_slug ON public_rates(slug);
+CREATE INDEX IF NOT EXISTS idx_public_rates_user_id ON public_rates(user_id);
+
+-- Enable RLS on public_rates
+ALTER TABLE public_rates ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can view public rate cards
+CREATE POLICY "Public rate cards are viewable by everyone" ON public_rates
+  FOR SELECT USING (true);
+
+-- Anyone can create rate cards (anonymous users included)
+CREATE POLICY "Anyone can create rate cards" ON public_rates
+  FOR INSERT WITH CHECK (true);
+
+-- Only increment views_count via function
+CREATE POLICY "Anyone can update view count" ON public_rates
+  FOR UPDATE USING (true) WITH CHECK (true);
